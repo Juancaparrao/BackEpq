@@ -1,13 +1,12 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { registrarVigilante } = require("./CONTROLLERS/RegistrarVigilante");
+import express from "express";
+import bodyParser from "body-parser";
+import { registrarVigilante } from "./CONTROLLERS/RegistrarVigilante.js";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// ✅ Ruta usando la función del controlador
 app.post("/registrar-directo", registrarVigilante);
 
 app.listen(port, () => {

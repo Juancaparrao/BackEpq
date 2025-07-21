@@ -1,6 +1,6 @@
 import pool from "../db.js";
 
-function registrarVigilante(req, res) {
+export async function registrarVigilante(req, res) {
   const { documento, nombre } = req.body;
 
   if (!documento || !nombre) {
@@ -9,14 +9,14 @@ function registrarVigilante(req, res) {
 
   const sql = "INSERT INTO vigilante (documento, nombre) VALUES (?, ?)";
 
-  pool.query(sql, [documento, nombre], (err, result) => {
-    if (err) {
-      console.error("❌ Error al registrar:", err);
-      return res.status(500).json({ mensaje: "Error al registrar el vigilante" });
-    }
+  try {
+    await pool.query(sql, [documento, nombre]);
     res.status(201).json({ mensaje: "✅ Vigilante registrado correctamente" });
-  });
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ mensaje: "⚠️ El vigilante ya está registrado" });
+    }
+    console.error("❌ Error al registrar:", err);
+    res.status(500).json({ mensaje: "Error al registrar el vigilante" });
+  }
 }
-
-// 🔹 Exportar la función
-module.exports = { registrarVigilante };
